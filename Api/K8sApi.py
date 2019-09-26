@@ -15,7 +15,7 @@ except ImportError as e:
 import kubernetes.client
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 config = conf.ConfigParser()
-config.read(os.path.join(BASE_DIR, 'conf/autoconfig.ini'))
+config.read(os.path.join(BASE_DIR, 'config.conf'))
 
 
 class K8sInt:
@@ -78,50 +78,8 @@ class K8sOpt(K8sInt):
 if __name__ == '__main__':
     k8s = K8sOpt(namespace='ynsysit')
     import os
-    from conf.templatePod import TemplatePod
-    from django.db import connection
+    from k8sconfig.templatePod import TemplatePod
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Depovs.settings")
-
-
-    class DbOpt:
-        def __init__(self):
-            pass
-
-        @staticmethod
-        def get_corsor():
-            return connection.cursor()
-
-
-    sql = """
-    SELECT immage_port,
-        namespace,
-        configmap,
-        harbor,
-        image_com,
-        image_arg,
-        image_path
-    FROM
-        templatepod where tag = 'war'
-    """
-
-    a = DbOpt.get_corsor()
-    a.execute(sql)
-    a = a.fetchall()[0]
-
-    bdict = {"immage_port": a[0],
-             "namespace": a[1],
-             "configmap": a[2],
-             "harbor": a[3],
-             "image_com": a[4],
-             "image_arg": a[5],
-             "image_path": a[5],
-             "image_gitname": 'b2btest',
-             "image_name": 'harbor.ynsy.com/lvyou/b2b64_c429f1:latest',
-             }
-
-    b2b = TemplatePod(**bdict)
-    data = b2b.pod()
     # k8s.create_deployment(data)
     # k8s.delete_deployment('b2btest-deployment')
     # imageName = 'nginx:1.9.1'

@@ -1,21 +1,30 @@
 from django.db import models
+from asset import models as assetModels
 
 # Create your models here.
 
 
 class TemplatePod(models.Model):
     name = models.CharField(verbose_name='模板名称',max_length=50)
-    namespace = models.CharField(verbose_name='命名空间', max_length=50)
+    namespace = models.ForeignKey(assetModels.Work_Env,on_delete=models.CASCADE,verbose_name='命名空间')
     configmap = models.CharField(verbose_name='环境变量', max_length=20)
     harbor = models.CharField(verbose_name='镜像仓库', max_length=20)
-    image_com = models.CharField(verbose_name='运行命令', max_length=200)
-    image_arg = models.CharField(verbose_name='命令参数', max_length=20)
-    image_path = models.CharField(verbose_name='验证地址', max_length=100, default="/")
-    immage_port = models.BigIntegerField(verbose_name='容器端口')
+    common = models.CharField(verbose_name='运行命令', max_length=200)
+    args = models.CharField(verbose_name='命令参数', max_length=20)
+    path = models.CharField(verbose_name='验证地址', max_length=100, default="/")
+    port = models.BigIntegerField(verbose_name='容器端口')
+    replicas = models.SmallIntegerField(verbose_name='副本数')
+    requestsMem = models.CharField(verbose_name='需求内存',max_length=10)
+    requestsCpu = models.CharField(verbose_name='需求CPU',max_length=10)
+    limitsMem = models.CharField(verbose_name='限制内存',max_length=10)
+    rlimitsCpu = models.CharField(verbose_name='需求CPU',max_length=10)
+    initialDelaySeconds = models.CharField(verbose_name='初始化时间',max_length=10)
+    periodSeconds = models.CharField(verbose_name='重试',max_length=10)
+    timeoutSeconds = models.CharField(verbose_name='超时',max_length=10)
 
     class Meta:
         db_table = 'template'
-        verbose_name = 'Pod基础模板'
+        verbose_name = '基础模板'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -27,7 +36,7 @@ class GitInfo(models.Model):
     git_name = models.CharField(verbose_name='服务名称',max_length=50)
     git_http = models.CharField(verbose_name='Http地址',max_length=100)
     git_ssh = models.CharField(verbose_name='ssh地址',max_length=100)
-    git_env = models.CharField(verbose_name='环境',max_length=10)
+    git_env = models.ForeignKey(assetModels.ServerUse,on_delete=models.CASCADE,verbose_name='项目环境')
     git_sort = models.SmallIntegerField(verbose_name="排序",blank=True,null=True)
     git_tag = models.ForeignKey(TemplatePod, verbose_name='模板名称', on_delete=models.CASCADE)
 

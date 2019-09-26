@@ -37,5 +37,6 @@ urlpatterns = [
     path('asset/', include('asset.urls', namespace='asset')),
     path('jobs/', include('jobs.urls', namespace='jobs')),
     path('audit/', include('audit.urls', namespace='audit')),
+    path('kube/', include('kube.urls',namespace='kube')),
     path('api/', include(router.urls)),
 ]

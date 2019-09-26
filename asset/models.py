@@ -77,7 +77,7 @@ class Asset(models.Model):
 
 class ServerUse(models.Model):
     name = models.CharField(max_length=128, unique=True, verbose_name=_("Server Use Name"))
-    mini_name = models.CharField(max_length=32, unique=True, verbose_name=_("Server Use Short Name"))
+    mini_name = models.CharField(max_length=32, unique=True, verbose_name=_("Server Use Describe Name"))
 
     class Meta:
         db_table = "serveruse"
@@ -102,7 +102,7 @@ class Area(models.Model):
 
 class Work_Env(models.Model):
     name = models.CharField(max_length=128, unique=True, verbose_name=_("Work_Env Name"))
-    mini_name = models.CharField(max_length=32, unique=True, verbose_name=_("Work_Env Short Name"))
+    mini_name = models.CharField(max_length=32, unique=True, verbose_name=_("Work_Env Describe Name"))
 
     class Meta:
         db_table = "work_env"

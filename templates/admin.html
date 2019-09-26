@@ -36,8 +36,8 @@
             <li id="k8s" class="{{ k8s_active }}">
                 <a href="#" ><i class="fa fa-cloud"></i> <span class="nav-label">{% trans 'K8s Manage' %}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
-                    <li class="{{ asset_list_active }}">
-                        <a href="{% url 'asset:asset_list' %}">{% trans 'Server Manage' %}</a>
+                    <li class="{{ kube_list_active }}">
+                        <a href="{% url 'kube:pod_list' namespace='ynsysit' %}">{% trans 'Kube Manage' %}</a>
                     </li>
                     <li class="{{ asset_idc_active }}">
                         <a href="{% url 'asset:idc_list' %}">{% trans 'Idc Manage' %}</a>

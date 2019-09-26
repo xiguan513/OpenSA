@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'asset',
     'audit',
     'jobs',
-    'kubernetes',
+    'kube',
 ]
 
 MIDDLEWARE = [
