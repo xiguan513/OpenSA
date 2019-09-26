@@ -33,7 +33,29 @@
                     </li>
                 </ul>
             </li>
-
+            <li id="k8s" class="{{ k8s_active }}">
+                <a href="#" ><i class="fa fa-cloud"></i> <span class="nav-label">{% trans 'K8s Manage' %}</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li class="{{ asset_list_active }}">
+                        <a href="{% url 'asset:asset_list' %}">{% trans 'Server Manage' %}</a>
+                    </li>
+                    <li class="{{ asset_idc_active }}">
+                        <a href="{% url 'asset:idc_list' %}">{% trans 'Idc Manage' %}</a>
+                    </li>
+                    <li class="{{ asset_product_active }}">
+                        <a href="{% url 'asset:product_list' %}">{% trans 'Product Manage' %}</a>
+                    </li>
+                    <li class="{{ asset_use_active }}">
+                        <a href="{% url 'asset:use_list' %}">{% trans 'Server Use' %}</a>
+                    </li>
+                    <li class="{{ asset_work_active }}">
+                        <a href="{% url 'asset:workenv_list' %}">{% trans 'Work Env' %}</a>
+                    </li>
+                    <li class="{{ asset_area_active }}">
+                        <a href="{% url 'asset:area_list' %}">{% trans 'Area Manage' %}</a>
+                    </li>
+                </ul>
+            </li>
             <li id="jobs" class="{{ jobs_active }}">
                 <a href="#"><i class="fa fa-flask"></i> <span class="nav-label">{% trans 'Jobs Manage' %}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">

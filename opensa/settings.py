@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'asset',
     'audit',
     'jobs',
+    'kubernetes',
 ]
 
 MIDDLEWARE = [
@@ -237,4 +238,21 @@ CELERY_IMPORTS = ('opensa.celery')
 
 #文件或者配置目录
 DATA_DIR="/data/opensa"
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  #email后端
+EMAIL_USE_TLS = False   #是否使用TLS安全传输协议
+EMAIL_USE_SSL = True    #是否使用SSL加密，qq企业邮箱要求使用
+EMAIL_HOST = 'smtp.163.com'   #发送邮件的邮箱 的 SMTP服务器，这里用了qq企业邮箱
+EMAIL_PORT = 465     #发件箱的SMTP服务器端口
+EMAIL_HOST_USER = 'ynsymonitor@163.com'    #发送邮件的邮箱地址
+EMAIL_HOST_PASSWORD = '3uQs3ZRXBz'         #发送邮件的邮箱密码
+
+"""
+#使用setting邮件发送功能
+def mail(request):
+    send_mail('Subject here', 'Here is the message.', 'ynsymonitor@163.com',
+              ['songbing@ynsy.com'], fail_silently=False)
+    return HttpResponse('mail')
+"""
 
