@@ -37,7 +37,7 @@
                 <a href="#" ><i class="fa fa-cloud"></i> <span class="nav-label">{% trans 'K8s Manage' %}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
                     <li class="{{ kube_list_active }}">
-                        <a href="{% url 'kube:pod_list' namespace='ynsysit' %}">{% trans 'Kube Manage' %}</a>
+                        <a href="{% url 'kube:pod_list' namespace='ynsysit' %}">{% trans 'Pod List' %}</a>
                     </li>
                     <li class="{{ k8s_active }}">
                         <a href="{% url 'kube:deoloy_ment' %}">{% trans 'DeployMent' %}</a>

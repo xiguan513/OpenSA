@@ -20,7 +20,7 @@ spec:
       containers:
       - name: template
         imagePullPolicy: Always
-        image: harbor.ynsy.com/test/template205_d0f451:release145
+        image: harbor.ynsy.com/test/template234_cc9f03:latest
         resources:
           requests:
             memory: 1024Mi

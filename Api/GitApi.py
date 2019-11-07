@@ -7,7 +7,7 @@ Email: songbing513@mail.com
 
 import git
 import os
-from Api.MysqlApi import DbOpt
+
 
 
 try:
@@ -27,6 +27,7 @@ class GitOpt:
         self.gitAdd = gitAdd
         self.codeDir = config.get('code','dir')+codeName
         self.branchName = branch
+
 
     def clone(self):
         try:
@@ -51,7 +52,8 @@ class GitOpt:
 
 
     def checkout(self,branchname):
-        self.repo.git.checkout(branchname)
+        self.repo.remotes.origin.fetch() #git fetch
+        self.repo.git.checkout(branchname) # git checkout or git checkout -b
 
 
     def remotepull(self,branchname):
@@ -68,17 +70,17 @@ class GitOpt:
         self.repo.create_tag(tagname,message=tagmess)
 
 if __name__=="__main__":
-    git_add = 'ssh://git@192.168.1.228:7999/yun/test.git'
-    branch = "master"
-    dbcon = DbOpt().con()
-    cur = dbcon.cursor()
-    cur.execute('select git_name from gitinfo where git_ssh="ssh://git@192.168.1.228:7999/yun/test.git"')
-    for data in cur.fetchall():
-        codedir = data[0]
-        repo = GitOpt(git_add,branch,codedir)
-        print(repo.codeDir)
+    # git_add = 'ssh://git@192.168.1.228:7999/yun/test.git'
+    # branch = "master"
+    # dbcon = DbOpt().con()
+    # cur = dbcon.cursor()
+    # cur.execute('select git_name from gitinfo where git_ssh="ssh://git@192.168.1.228:7999/yun/test.git"')
+    # for data in cur.fetchall():
+    #     codedir = data[0]
+    #     repo = GitOpt(git_add,branch,codedir)
+    #     print(repo.codeDir)
         # repo = git.Repo('/data/code/test')
-        print(repo.repo.git.branch('-r').split())
+        # print(repo.repo.git.branch('-r').split())
 
 
         # localCommit = repo.repo.head.reference.commit
@@ -105,4 +107,7 @@ if __name__=="__main__":
     #repo.createtag('v.0.1','v.0.1')
     #repo.remotepush('v.0.1')
 
+    git_add = "git@github.com:xiguan513/java-maven-junit-helloworld.git"
+    repo = GitOpt(gitAdd=git_add,branch="master",codeName="template")
 
+    repo.checkout("release/151")

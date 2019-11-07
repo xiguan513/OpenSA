@@ -64,7 +64,7 @@ class GitInfo(models.Model):
 
 
 class UpdateInfo(models.Model):
-    server_name = models.ForeignKey(GitInfo,on_delete=models.CASCADE,verbose_name="服务名称")
+    server_name = models.CharField(verbose_name="服务名称",max_length=100)
     image_name = models.CharField(verbose_name="镜像名字",max_length=100,null=True,blank=True)
     pro_env = models.CharField(verbose_name="运行环境",max_length=10,null=True)
     image_env = models.CharField(verbose_name='项目环境', max_length=10,null=True)
@@ -103,7 +103,7 @@ class Release(models.Model):
     server_name = models.CharField(verbose_name='服务名称',max_length=100)
     image_name = models.CharField(verbose_name="镜像名字",max_length=100,null=True,blank=True)
     branch_env = models.CharField(verbose_name="上线分支",max_length=50)
-    build_uuid = models.UUIDField(verbose_name='uuid', null=True)
+    status = models.CharField(verbose_name="latest", max_length=50, default="latest")
     create_time = models.DateTimeField(verbose_name="镜像创建时间", auto_now=True)
 
 
@@ -113,7 +113,7 @@ class Release(models.Model):
         verbose_name = '阿里云上线记录'
         verbose_name_plural = verbose_name
         ordering = ['-create_time']
-        unique_together = (('server_name', 'branch_env','build_uuid'))
+        unique_together = (('server_name','status','branch_env'))
 
     def __str__(self):
         return self.image_name

@@ -46,8 +46,8 @@ class DeployStatusAdmin(admin.ModelAdmin):
 
 @admin.register(Release)
 class ReleaseAdmin(admin.ModelAdmin):
-    list_display = ['id','server_name','image_name','create_time','branch_env']
-    search_fields = ('server_name', 'branch_env')
+    list_display = ['id','server_name','image_name','branch_env','status','create_time']
+    search_fields = ('server_name', 'branch_env','status')
     ordering = ['-create_time']
 
 

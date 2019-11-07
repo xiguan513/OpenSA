@@ -97,8 +97,9 @@
                                         </th>
                                         <th>{% trans 'IP' %}</th>
                                         <th>{% trans 'NameSpace' %}</th>
-                                        <th>{% trans 'Name' %}</th>
-                                        <th>{% trans 'Status' %}</th>
+                                        <th>{% trans 'Pod Name' %}</th>
+                                        <th>{% trans 'Container Status' %}</th>
+                                        <th>{% trans 'Server Status' %}</th>
                                         <th>{% trans 'NODE' %}</th>
                                     </tr>
                                     </thead>
@@ -110,12 +111,19 @@
                                             <td>{{ pod.metadata.namespace }}</td>
                                             <td>{{ pod.metadata.name }}</td>
                                             <td class="text-center">
-									         		{% if pod.status.phase == "Running" %}
+									         		{% if pod.status.phase == "Running"  and  pod.status.container_statuses.0.ready  == True %}
 									         			<button  type="button" style='background-color:green'  class="btn btn-default disabled">{{ pod.status.phase }}</button>
 									         		{% else %}
                                                         <button  type="button" style='background-color:red;'  class="btn btn-default disabled">{{ pod.status.phase }}</button>
 									         		{% endif %}
 									         </td>
+                                            <td class="text-center">
+                                                {% if pod.status.container_statuses.0.ready  == True %}
+									         			<button  type="button" style='background-color:green'  class="btn btn-default disabled">启动成功</button>
+									         		{% else %}
+                                                        <button  type="button" style='background-color:red;'  class="btn btn-default disabled">启动失败</button>
+									         		{% endif %}
+                                            </td>
                                             <td>{{ pod.status.host_ip }}</td>
                                         </tr>
                                         {% endfor %}

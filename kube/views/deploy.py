@@ -4,6 +4,7 @@
 Author: 习惯
 Email: songbing513@mail.com
 """
+from django.db import connection
 from django.views.generic import View,ListView,DetailView,CreateView,DeleteView
 from django.db.models import Q,F
 from django.views.decorators.csrf import csrf_exempt
@@ -125,6 +126,8 @@ class deoloyMent(LoginPermissionRequired,View):
                     # print(proList, "检查到有common")
                     gitInfoList = models.GitInfo.objects.filter(git_env__name=proEnv)
                     projectName = [project.git_name for project in gitInfoList]
+                for project in projectName:
+                    models.DeployStatus.objects.create(server_name=project,env_name=statusName, renew_status='开始Build',branch_env=branchName,build_uuid=buildUuid)
             print("判断是否执行到projectName:%s" % projectName)
             if not projectName:
                 models.DeployStatus.objects.filter(build_uuid=buildUuid).update(renew_status="没有检查到更新项目",)
@@ -134,14 +137,7 @@ class deoloyMent(LoginPermissionRequired,View):
                     tmpParam = models.GitInfo.objects.filter(git_name=project)
                     # print("查询对象%s" % tmpParam)
                     for parm in tmpParam:
-                        models.DeployStatus.objects.create(server_name=project, env_name=statusName,
-                                                           renew_status='开始Build', branch_env=branchName,
-                                                           build_uuid=buildUuid)
                         try:
-                            if re.findall(r'^release/\d{3}$', branchName):
-                                models.Release.objects.create(server_name=parm,branch_env=branchName,build_uuid=buildUuid)
-                            else:
-                                models.UpdateInfo.objects.create(server_name=parm, build_uuid=buildUuid)
                             # print("实行build %s" % parm)
                             buildPro.buildjob(project,branchName,envName,proEnv,buildUuid)
                             time.sleep(10)
@@ -158,7 +154,8 @@ class deoloyMent(LoginPermissionRequired,View):
 def generateK8s(request):
     if request.method == 'POST':
         postBody = request.body
-        text = json.loads(postBody.decode('utf-8'))
+        text = json.loads(postBody.decode('utf-8'))  # linux
+        # text = json.loads(postBody) # mac
         branch = text['branchname']
         gitName = text['gitname']
         imageName = text['imagename']
@@ -169,11 +166,14 @@ def generateK8s(request):
         updateTem = models.TemplatePod.objects.filter(gitinfo__git_name=gitName).first()
         if re.findall(r'^release/\d{3}$',branch):
             #记录release版本的镜像信息
-            models.Release.objects.update_or_create(defaults={'image_name':imageName,'branch_env':branch,'server_name':gitName},
-                                                    server_name=gitName,branch_env=branch,build_uuid=buildUuid)
+            models.Release.objects.filter(server_name=gitName,branch_env=branch).update(status="")
+            models.Release.objects.create(image_name=imageName,server_name=gitName,branch_env=branch)
+            # print(connection.queries)
         else:
-            models.UpdateInfo.objects.filter(build_uuid=buildUuid, server_name__git_name=gitName).update(
-                image_name=imageName, pro_env=nameSpace, image_env=imagePor,branch_env=branch)
+            models.UpdateInfo.objects.create(build_uuid=buildUuid,server_name=gitName,
+                                             image_name=imageName, pro_env=nameSpace,
+                                             image_env=imagePor,branch_env=branch)
+
         deployName = gitName.replace("_", "-")
         args = updateTem.args #获取命令参数
         if ',' in args:

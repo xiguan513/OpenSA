@@ -105,10 +105,10 @@ class K8sOpt(K8sInt):
 
 
 if __name__ == '__main__':
-    k8s = K8sOpt(namespace='erpsit')
+    k8s = K8sOpt(namespace='ynsysit')
     import os
     # k8s.read_deployment('b2b1-deployment')
-    k8s.delete_deployment('ty-ynsy-activity-deployment')
+    # k8s.delete_deployment('ty-ynsy-activity-deployment')
     from k8sconfig.templatePod import TemplatePod
     # k8s.create_namespace('song')
     # k8s.create_deployment(data)
@@ -116,6 +116,7 @@ if __name__ == '__main__':
     # imageName = 'nginx:1.9.1'
     # k8s.update_deployment('b2btest-deployment',data,imageName)
     # print("IP\tNameSpace\tName\tStatus\tNODE")
-    # for pod in k8s.list_deployment().items:
-    #     print("%s\t%s\t%s\t%s\t%s" %
-    #           (pod.status.pod_ip,pod.metadata.namespace,pod.metadata.name,pod.status.phase,pod.status.host_ip))
+    for pod in k8s.list_deployment().items:
+        print(pod.status.container_statuses[0].ready)
+        print("%s\t%s\t%s\t%s\t%s" %
+              (pod.status.pod_ip,pod.metadata.namespace,pod.metadata.name,pod.status.phase,pod.status.host_ip))
