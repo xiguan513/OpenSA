@@ -159,7 +159,8 @@ LANGUAGE_CODE = 'zh-Hans'
 
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
+# USE_TZ = True
+USE_TZ = False
 USE_THOUSAND_SEPARATOR = True
 LANGUAGES = (
     ('en', ugettext('Simple Chinese')),
@@ -255,4 +256,23 @@ def mail(request):
               ['songbing@ynsy.com'], fail_silently=False)
     return HttpResponse('mail')
 """
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console':{
+#             'level':'DEBUG',
+#             'class':'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['console'],
+#             'propagate': True,
+#             'level':'DEBUG',
+#         },
+#     }
+# }
+
 

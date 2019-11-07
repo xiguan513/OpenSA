@@ -205,7 +205,7 @@ class UseFormUpdate(forms.ModelForm):
             'name': _("* mandatory field"),
         }
 
-
+from Api import K8sApi
 class WorkenvForm(forms.ModelForm):
 
     def clean(self):
@@ -215,7 +215,8 @@ class WorkenvForm(forms.ModelForm):
             Work_Env.objects.get(name=value)
             self._errors['name'] = self.error_class([_("{} User information already exists".format(value))])
         except Work_Env.DoesNotExist:
-            pass
+            k8s = K8sApi.K8sOpt(value)
+            k8s.create_namespace()
         return cleaned_data
 
     class Meta:

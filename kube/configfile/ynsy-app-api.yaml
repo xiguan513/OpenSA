@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ynsy-app-api-deployment
+  labels:
+    app: ynsy-app-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ynsy-app-api
+  template:
+    metadata:
+      labels:
+        app: ynsy-app-api
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: nfs-ynsysit-pvc
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: harbor
+      containers:
+      - name: ynsy-app-api
+        imagePullPolicy: Always
+        image: harbor.ynsy.com/lvyou/ynsy_app_api19_deb533:latest
+        resources:
+          requests:
+            memory: 1024Mi
+            cpu: 500m
+          limits:
+            memory: 2048Mi
+            cpu: 500m
+        command:
+        - /alidata/www/tomcat/bin/catalina.sh
+        args:
+        - run
+        volumeMounts:
+        - name: data
+          mountPath: /data/
+        envFrom:
+        - configMapRef:
+            name: ynsysitconfigmap
+        ports:
+        - containerPort: 8080
+          name: httpd
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 420
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 420
+          timeoutSeconds: 15
+          periodSeconds: 5

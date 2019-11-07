@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: template-deployment
+  labels:
+    app: template
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: template
+  template:
+    metadata:
+      labels:
+        app: template
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: harbor
+      containers:
+      - name: template
+        imagePullPolicy: Always
+        image: harbor.ynsy.com/test/template205_d0f451:release145
+        resources:
+          requests:
+            memory: 1024Mi
+            cpu: 500m
+          limits:
+            memory: 2048Mi
+            cpu: 500m
+        command:
+        - java
+        args:
+        - -jar
+        - /app.jar
+        envFrom:
+        - configMapRef:
+            name: ynsysitconfigmap
+        ports:
+        - containerPort: 9000
+          name: httpd
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 420
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 9000
+          initialDelaySeconds: 420
+          timeoutSeconds: 15
+          periodSeconds: 5

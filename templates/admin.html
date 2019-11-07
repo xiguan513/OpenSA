@@ -39,11 +39,11 @@
                     <li class="{{ kube_list_active }}">
                         <a href="{% url 'kube:pod_list' namespace='ynsysit' %}">{% trans 'Kube Manage' %}</a>
                     </li>
-                    <li class="{{ asset_idc_active }}">
-                        <a href="{% url 'asset:idc_list' %}">{% trans 'Idc Manage' %}</a>
+                    <li class="{{ k8s_active }}">
+                        <a href="{% url 'kube:deoloy_ment' %}">{% trans 'DeployMent' %}</a>
                     </li>
-                    <li class="{{ asset_product_active }}">
-                        <a href="{% url 'asset:product_list' %}">{% trans 'Product Manage' %}</a>
+                    <li class="{{ code_freeze }}">
+                        <a href="{% url 'kube:freeze' %}">{% trans 'Code Freeze' %}</a>
                     </li>
                     <li class="{{ asset_use_active }}">
                         <a href="{% url 'asset:use_list' %}">{% trans 'Server Use' %}</a>

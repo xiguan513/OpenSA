@@ -15,7 +15,7 @@ import numpy as np
 from opensa.settings import DATA_DIR,STATIC_DIR
 import io
 import sys
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
+# sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
 
 class OpenSaEncoder(json.JSONEncoder):
     def default(self, obj):

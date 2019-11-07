@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse_lazy
 from opensa.api import LoginPermissionRequired
 from ..forms import WorkenvForm,WorkenvFormUpdate
+from Api import K8sApi
 
 class WorkEnvList(LoginPermissionRequired,ListView):
 
@@ -53,6 +54,7 @@ class WorkEnvAdd(LoginPermissionRequired,CreateView):
         else:
             try:
                 context['i__next__'] = self.request.META['HTTP_REFERER']
+
             except Exception as e:
                 pass
         kwargs.update(context)
@@ -60,6 +62,8 @@ class WorkEnvAdd(LoginPermissionRequired,CreateView):
 
     def form_invalid(self, form):
         return super(WorkEnvAdd, self).form_invalid(form)
+
+
 
 class WorkEnvUpdate(LoginPermissionRequired,UpdateView):
 
@@ -101,10 +105,15 @@ class WorkEnvDel(LoginPermissionRequired,View):
         try:
             if request.POST.get('nid') :
                 id = request.POST.get('nid', None)
+                name = Work_Env.objects.values('name').filter(id=id).first()
+                k8s = K8sApi.K8sOpt(namespace=name['name'])
+                k8s.delete_namespace()
                 Work_Env.objects.get(id=id).delete()
             else:
                 ids = request.POST.getlist('id', None)
                 Work_Env.objects.filter(id__in=ids).delete()
+
+
         except Exception as e:
             ret['status'] = False
             ret['error'] = _('Deletion error，{}'.format(e))

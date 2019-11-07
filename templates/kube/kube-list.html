@@ -28,6 +28,31 @@
                     <strong>{% trans 'Kube List' %}</strong>
                 </li>
             </ol>
+            <form id="cha" class="form-horizontal" action="" method="GET">
+                                {% csrf_token %}
+                             {% ifequal user.level 2 %}
+                                 <a href=></a>
+                                 <div class="page-header" style="padding: 0px;border: 0px;">
+                                     <div class="form-horizontal">
+                                         <div class="control-label col-lg-1">
+                                             Select:
+                                         </div>
+                                         <div class="col-lg-2">
+                                             <select class="form-control" id="mySelect">
+                                                 {% for workenv in workenv_list %}
+                                                      {% if select == workenv.name %}
+                                                          <option value="{{ select }}" selected="selected">{{ select }}</option>
+                                                      {% else %}
+                                                           <option value="{{ workenv }}">{{ workenv }}</option>
+                                                      {% endif %}
+
+                                                 {% endfor %}
+                                             </select>
+                                         </div>
+                                     </div>
+                                 </div>
+                             {% endifequal %}
+                            </form>
         </div>
         <div class="col-lg-2">
 
@@ -35,7 +60,6 @@
     </div>
     <div class="wrapper wrapper-content animated fadeInRight   ">
         <div class="row">
-
             <div class="col-lg-12" id="split-right">
 
                 <div class="ibox float-e-margins">
@@ -61,7 +85,6 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-
                         <div class="table-responsive">
                             <form id="del_form_asset_all" class="form-horizontal"
                                   action="" method="post">
@@ -80,9 +103,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-
-                                    {% for   pods   in  podStauts %}
-                                        {% for pod in pods  %}
+                                        {% for pod in podStauts  %}
                                          <tr class="gradeA" id="{{ forloop.counter0 }}">
                                             <td><input type="checkbox" value="{{ forloop.counter0 }}" name="id"></td>
                                             <td>{{ pod.status.pod_ip }}</td>
@@ -90,15 +111,14 @@
                                             <td>{{ pod.metadata.name }}</td>
                                             <td class="text-center">
 									         		{% if pod.status.phase == "Running" %}
-									         			<button  type="button" style='background-color:green'  class="btn btn-default disabled">Running</button>
+									         			<button  type="button" style='background-color:green'  class="btn btn-default disabled">{{ pod.status.phase }}</button>
 									         		{% else %}
-                                                        <button  type="button" style='background-color:red;'  class="btn btn-default disabled">Running</button>
+                                                        <button  type="button" style='background-color:red;'  class="btn btn-default disabled">{{ pod.status.phase }}</button>
 									         		{% endif %}
 									         </td>
                                             <td>{{ pod.status.host_ip }}</td>
                                         </tr>
                                         {% endfor %}
-                                    {% endfor %}
                                     </tbody>
 
                                 </table>
@@ -121,6 +141,9 @@
 {% block footer-js %}
 
 <script src="{% static 'js/plugins/dataTables/datatables.min.js' %}"></script>
+
+
+
 
 <script>
     $(document).ready(function(){
@@ -151,6 +174,16 @@
         });
 
     });
+
+
+    $(document).ready(function () {
+        $('#mySelect').change(function () {
+            var p1 = $(this).children('option:selected');//这就是selected的值
+            p1.select();
+            window.location.href = "/kube/pod-list/"+p1.val()+"/";//页面跳转并传参
+        })
+    })
+
 </script>
 
 {% endblock %}

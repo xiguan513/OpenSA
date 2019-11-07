@@ -17,7 +17,7 @@ except ImportError as e:
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 config = conf.ConfigParser()
-config.read(os.path.join(BASE_DIR, 'conf/autoconfig.ini'))
+config.read(os.path.join(BASE_DIR, 'config.conf'))
 
 
 
@@ -30,8 +30,9 @@ class GitOpt:
 
     def clone(self):
         try:
-            git.Repo.clone_from(self.gitAdd,to_path=os.path.join(self.codeDir),branch="master")
-            return 0
+            if not os.path.exists(self.codeDir):
+                git.Repo.clone_from(self.gitAdd,to_path=os.path.join(self.codeDir),branch="master")
+                return 0
         except Exception as err:
             return str(err)
     @property

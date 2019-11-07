@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block  title %}{% trans 'Deploy Ment' %}{% endblock %}
+{% load bootstrap3 %}
+{% load static %}
+
+
+
+{% block header-css %}
+    <link href="{% static 'css/plugins/select2/select2.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block page-content %}
+
+
+
+    <div class="wrapper wrapper-content animated fadeInRight   ">
+    <div class="row">
+        <div class="col-lg-12" id="split-right">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{% trans 'Deploy Ment' %}</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">{% trans 'Config Option 1' %}</a>
+                            </li>
+                            <li><a href="#">{% trans 'Config Option 2' %}</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="fa    fa-gears"></i>代码部署
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <legend><i class="fa  fa-paper-plane"></i>代码部署</legend>
+                                            <form role="form" id="deployRun"
+                                                  class="main form-horizontal">{% csrf_token %}
+                                                <fieldset>
+                                                      <div class="form-group">
+                                                        <label class="col-sm-3 control-label">选择环境:</label>
+                                                        <div class="col-sm-6">
+                                                            <select class="form-control" id="envName">
+                                                            {% for workenv in workenv_list %}
+                                                                {% if select == workenv %}
+                                                                    <option value="{{ select }}"
+                                                                            selected="selected">{{ select }}</option>
+                                                                {% else %}
+                                                                    <option  value="{{ workenv }}">{{ workenv }}</option>
+                                                                {% endif %}
+
+                                                            {% endfor %}
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">选择项目:</label>
+                                                        <div class="col-sm-6">
+                                                            <select class="form-control" id="proEnv">
+                                                                {% for projectenv in project_list %}
+                                                                    {% if select == projectenv %}
+                                                                        <option value="{{ select }}"
+                                                                                selected="selected">{{ select }}</option>
+                                                                    {% else %}
+                                                                        <option value="{{ projectenv }}">{{ projectenv }}</option>
+                                                                    {% endif %}
+
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">分支名称:</label>
+                                                        <div class="col-sm-6">
+                                                            <input type="text" class="form-control"
+                                                                   name="branchName" id="branchName" value="master"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">全部更新:</label>
+                                                        <div class="col-sm-6">
+                                                            <input type="checkbox" class="form-control"
+                                                                   name="checkAll" id="checkAll"/>
+                                                        </div>
+                                                    </div>
+
+                                                </fieldset>
+                                                <legend></legend>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label"></label>
+                                                    <button type="button" class="btn btn-default"
+                                                            onclick="runDeploy()">更新部署
+                                                    </button>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                        <!-- /.col-lg-6 (nested) -->
+                                        <div class="col-lg-6">
+                                            <legend><i class="fa  fa-paper-plane-o"></i>部署详情</legend>
+                                            <div class="well well-lg">
+                                                <div id="result">
+                                                </div>
+                                            </div>
+                                            <!-- /.col-lg-6 (nested) -->
+                                        </div>
+                                        <!-- /.row (nested) -->
+                                    </div>
+                                    <!-- /.panel-body -->
+                                </div>
+                                <!-- /.panel -->
+                            </div>
+                            <!-- /.col-lg-12 -->
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock %}
+
+{% block footer-js %}
+    <script src="{% static 'js/plugins/select2/select2.full.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({closeOnSelect: false});
+
+        });
+
+        function runDeploy() {
+            var envName =  $("#envName").val();
+            var proEnv =  $("#proEnv").val();
+            var branchName =  $("#branchName").val();
+            if ($("#checkAll").is(":checked")) {
+                var checkAll =  "True";
+            }else {
+                var checkAll =  "False";
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '',
+                data: {"envName":envName,"proEnv":proEnv,"branchName":branchName,"checkAll":checkAll},
+                datatype: "json",
+                success: function (response) {
+                    if (response == 'success') {
+                        alert("开始部署，请稍等");
+                    } else if (response == 'exists') {
+                        alert('部署中，请稍等');
+                    } else if (response == 'None') {
+                        alert('没有检查到需要更新的项目，请检查是否有更新')
+                    }else {
+                       alert("部署失败!");
+                    }
+
+                },
+                error:function () {
+                    alert("33333333")
+                }
+            });
+
+        }
+
+
+    </script>
+{% endblock %}

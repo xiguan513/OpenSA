@@ -14,31 +14,117 @@ class TemplatePod:
         "apiVersion": "apps/v1",
         "kind": "Deployment",
         "metadata": {
-            "name": self.kwargs["image_gitname"]+"-deployment",
-            "namespace": self.kwargs["namespace"],
+            "name": self.kwargs["gitName"]+"-deployment",
             "labels": {
-                "app": self.kwargs["image_gitname"]
+                "app": self.kwargs["gitName"]
             }
         },
         "spec": {
             "replicas": 1,
             "selector": {
                 "matchLabels": {
-                    "app": self.kwargs["image_gitname"]
+                    "app": self.kwargs["gitName"]
                 }
             },
             "template": {
                 "metadata": {
                     "labels": {
-                        "app": self.kwargs["image_gitname"]
+                        "app": self.kwargs["gitName"]
+                    }
+                },
+                "spec": {
+                    "restartPolicy": "Always",
+                    "imagePullSecrets": [
+                        {
+                            "name": self.kwargs["harbor"]
+                        }
+                    ],
+                    "containers": [
+                        {
+                            "name": self.kwargs["gitName"],
+                            "imagePullPolicy": "Always",
+                            "image": self.kwargs["imageName"],
+                            "resources": {
+                                "requests": {
+                                    "memory": self.kwargs["requestsMem"],
+                                    "cpu": self.kwargs["requestsCpu"]
+                                },
+                                "limits": {
+                                    "memory": self.kwargs["limitsMem"],
+                                    "cpu": self.kwargs["rlimitsCpu"]
+                                }
+                            },
+                            "command": [
+                                self.kwargs["common"]
+                            ],
+                            "args": self.kwargs["args"],
+                            "envFrom": [
+                                {
+                                    "configMapRef": {
+                                        "name": self.kwargs["configmap"]
+                                    }
+                                }
+                            ],
+                            "ports": [
+                                {
+                                    "containerPort": self.kwargs["port"],
+                                    "name": "httpd",
+                                    "protocol": "TCP"
+                                }
+                            ],
+                            "livenessProbe": {
+                                "httpGet": {
+                                    "path": self.kwargs["path"],
+                                    "port": self.kwargs["port"],
+                                    "scheme": "HTTP"
+                                },
+                                "initialDelaySeconds": self.kwargs["initialDelaySeconds"],
+                                "periodSeconds": self.kwargs["periodSeconds"],
+                                "timeoutSeconds": self.kwargs["timeoutSeconds"]
+                            },
+                            "readinessProbe": {
+                                "tcpSocket": {
+                                    "port": self.kwargs["port"]
+                                },
+                                "initialDelaySeconds": self.kwargs["initialDelaySeconds"],
+                                "timeoutSeconds": self.kwargs["periodSeconds"],
+                                "periodSeconds": self.kwargs["timeoutSeconds"]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        }
+    def deploymentStor(self):
+        return {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+            "name": self.kwargs["gitName"]+"-deployment",
+            "labels": {
+                "app": self.kwargs["gitName"]
+            }
+        },
+        "spec": {
+            "replicas": 1,
+            "selector": {
+                "matchLabels": {
+                    "app": self.kwargs["gitName"]
+                }
+            },
+            "template": {
+                "metadata": {
+                    "labels": {
+                        "app": self.kwargs["gitName"]
                     }
                 },
                 "spec": {
                     "volumes": [
                         {
-                            "name": "data",
+                            "name": self.kwargs['storName'],
                             "persistentVolumeClaim": {
-                                "claimName": "nfs-ynsysit-pvc"
+                                "claimName": self.kwargs['claimName']
                             }
                         }
                     ],
@@ -50,29 +136,29 @@ class TemplatePod:
                     ],
                     "containers": [
                         {
-                            "name": self.kwargs["image_gitname"],
+                            "name": self.kwargs["gitName"],
                             "imagePullPolicy": "Always",
-                            "image": self.kwargs["image_name"],
+                            "image": self.kwargs["imageName"],
                             "resources": {
                                 "requests": {
-                                    "memory": "1024Mi",
-                                    "cpu": "500m"
+                                    "memory": self.kwargs["requestsMem"],
+                                    "cpu": self.kwargs["requestsCpu"]
                                 },
                                 "limits": {
-                                    "memory": "2048Mi",
-                                    "cpu": "500m"
+                                    "memory": self.kwargs["limitsMem"],
+                                    "cpu": self.kwargs["rlimitsCpu"]
                                 }
                             },
                             "command": [
-                                self.kwargs["image_com"]
+                                self.kwargs["common"]
                             ],
                             "args": [
-                                self.kwargs["image_arg"]
+                                self.kwargs["args"]
                             ],
                             "volumeMounts": [
                                 {
-                                    "name": "data",
-                                    "mountPath": "/data/"
+                                    "name": self.kwargs['storName'],
+                                    "mountPath": self.kwargs['mountPath']
                                 }
                             ],
                             "envFrom": [
@@ -84,28 +170,28 @@ class TemplatePod:
                             ],
                             "ports": [
                                 {
-                                    "containerPort": self.kwargs["immage_port"],
+                                    "containerPort": self.kwargs["port"],
                                     "name": "httpd",
                                     "protocol": "TCP"
                                 }
                             ],
                             "livenessProbe": {
                                 "httpGet": {
-                                    "path": self.kwargs["image_path"],
-                                    "port": self.kwargs["immage_port"],
+                                    "path": self.kwargs["path"],
+                                    "port": self.kwargs["port"],
                                     "scheme": "HTTP"
                                 },
-                                "initialDelaySeconds": 420,
-                                "periodSeconds": 15,
-                                "timeoutSeconds": 5
+                                "initialDelaySeconds": self.kwargs["initialDelaySeconds"],
+                                "periodSeconds": self.kwargs["periodSeconds"],
+                                "timeoutSeconds": self.kwargs["timeoutSeconds"]
                             },
                             "readinessProbe": {
                                 "tcpSocket": {
-                                    "port": self.kwargs["immage_port"]
+                                    "port": self.kwargs["port"]
                                 },
-                                "initialDelaySeconds": 420,
-                                "timeoutSeconds": 5,
-                                "periodSeconds": 15
+                                "initialDelaySeconds": self.kwargs["initialDelaySeconds"],
+                                "timeoutSeconds": self.kwargs["periodSeconds"],
+                                "periodSeconds": self.kwargs["timeoutSeconds"]
                             }
                         }
                     ]
