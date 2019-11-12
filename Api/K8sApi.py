@@ -106,7 +106,8 @@ class K8sOpt(K8sInt):
 
 if __name__ == '__main__':
     k8s = K8sOpt(namespace='ynsysit')
-    import os
+    import re
+    from kube.models import Release
     # k8s.read_deployment('b2b1-deployment')
     # k8s.delete_deployment('ty-ynsy-activity-deployment')
     from k8sconfig.templatePod import TemplatePod
@@ -116,7 +117,19 @@ if __name__ == '__main__':
     # imageName = 'nginx:1.9.1'
     # k8s.update_deployment('b2btest-deployment',data,imageName)
     # print("IP\tNameSpace\tName\tStatus\tNODE")
-    for pod in k8s.list_deployment().items:
-        print(pod.status.container_statuses[0].ready)
-        print("%s\t%s\t%s\t%s\t%s" %
-              (pod.status.pod_ip,pod.metadata.namespace,pod.metadata.name,pod.status.phase,pod.status.host_ip))
+
+    # for pod in k8s.list_deployment().items:
+    #     #releaseInfo = Release.objects.filter(branch_env="release/145", status="latest")
+    #     #print(pod.metadata.name)
+    #     print(pod.status.container_statuses[0].ready)
+    #     print("%s\t%s\t%s\t%s\t%s" %
+    #           (pod.status.pod_ip,pod.metadata.namespace,pod.metadata.name,pod.status.phase,pod.status.host_ip))
+
+    for name in Release.objects.filter(branch_env="release/", status="latest"):
+        p = re.compile(r'%s-deployment-\w.*-\w.*' % name)
+        for pod in k8s.list_deployment().items:
+            print(p.findall(pod.metadata.name))
+            # print("%s\t%s\t%s\t%s" % (pod.status.pod_ip, pod.metadata.namespace, pod.metadata.name,pod.spec.containers[0].image))
+
+
+

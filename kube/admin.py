@@ -31,16 +31,16 @@ class TemplateStorageAdmin(admin.ModelAdmin):
 
 @admin.register(UpdateInfo)
 class UpdateInfoAdmin(admin.ModelAdmin):
-    list_display = ['id','server_name','image_name','pro_env','image_env','branch_env','create_time']
+    list_display = ['id','server_name','image_name','pro_env','image_env','branch_env','build_uuid','create_time']
     ordering = ['-create_time']
-    search_fields = ('pro_env','server_name__git_name')
+    search_fields = ('pro_env','server_name','build_uuid')
 
 
 
 @admin.register(DeployStatus)
 class DeployStatusAdmin(admin.ModelAdmin):
     list_display = ['id','env_name','renew_status','server_name','create_time','branch_env','build_uuid']
-    search_fields = ('renew_status', 'env_name','server_name')
+    search_fields = ('renew_status', 'env_name','server_name','build_uuid')
     ordering = ['-create_time']
 
 
@@ -54,6 +54,7 @@ class ReleaseAdmin(admin.ModelAdmin):
 @admin.register(Codefreeze)
 class CodefreezeAdmin(admin.ModelAdmin):
     list_display = ['id','project_name','checkout_branch','code_freeze','git_tag','status']
+    search_fields = ('project_name', 'code_freeze', 'checkout_branch')
 
 admin.site.site_header = '自动化运维'
 admin.site.site_title = '自动化运维'

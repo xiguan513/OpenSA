@@ -95,10 +95,10 @@ $(document).ready(function () {
         return false;
     });
 
-    // Append config box / Only for demo purpose
+    // Append YNSY box / Only for demo purpose
     // Uncomment on server mode to enable XHR calls
-    //$.get("skin-config.html", function (data) {
-    //    if (!$('body').hasClass('no-skin-config'))
+    //$.get("skin-YNSY.html", function (data) {
+    //    if (!$('body').hasClass('no-skin-YNSY'))
     //        $('body').append(data);
     //});
 

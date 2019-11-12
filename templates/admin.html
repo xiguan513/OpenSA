@@ -46,13 +46,7 @@
                         <a href="{% url 'kube:freeze' %}">{% trans 'Code Freeze' %}</a>
                     </li>
                     <li class="{{ asset_use_active }}">
-                        <a href="{% url 'asset:use_list' %}">{% trans 'Server Use' %}</a>
-                    </li>
-                    <li class="{{ asset_work_active }}">
-                        <a href="{% url 'asset:workenv_list' %}">{% trans 'Work Env' %}</a>
-                    </li>
-                    <li class="{{ asset_area_active }}">
-                        <a href="{% url 'asset:area_list' %}">{% trans 'Area Manage' %}</a>
+                        <a href="{% url 'kube:aliyun' %}">{% trans 'AliYun' %}</a>
                     </li>
                 </ul>
             </li>

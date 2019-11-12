@@ -11,26 +11,26 @@
     </div>
     <ul class="nav navbar-top-links navbar-right">
         <li class="dropdown">
-            <a class="count-info dropdown-toggle" data-toggle="dropdown" href="#" target="_blank" aria-expanded="true">
-                <i class="fa fa-joomla"></i>
-                {% if project %}
-                    <span class="m-r-sm text-muted welcome-message">{{ project }}<b class="caret"></b></span>
-                {% else %}
-                    <span class="m-r-sm text-muted welcome-message">{% trans 'Choice Project' %}<b class="caret"></b></span>
-                {% endif %}
-            </a>
+{#            <a class="count-info dropdown-toggle" data-toggle="dropdown" href="#" target="_blank" aria-expanded="true">#}
+{#                <i class="fa fa-joomla"></i>#}
+{#                {% if project %}#}
+{#                    <span class="m-r-sm text-muted welcome-message">{{ project }}<b class="caret"></b></span>#}
+{#                {% else %}#}
+{#                    <span class="m-r-sm text-muted welcome-message">{% trans 'Choice Project' %}<b class="caret"></b></span>#}
+{#                {% endif %}#}
+{#            </a>#}
 
-                <ul class="dropdown-menu animated fadeInRight m-t-xs profile-dropdown">
-                    {% for pro in pro_info %}
-                        <li class="choice-project" name="{{ pro.id }}">
-                            <a class="count-info">
-                                <i class="fa fa-asterisk"></i>
-                                <span  class="m-r-sm text-muted welcome-message">{{ pro.name }}({{ pro.mini_name }})</span>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-        </li>
+{#                <ul class="dropdown-menu animated fadeInRight m-t-xs profile-dropdown">#}
+{#                    {% for pro in pro_info %}#}
+{#                        <li class="choice-project" name="{{ pro.id }}">#}
+{#                            <a class="count-info">#}
+{#                                <i class="fa fa-asterisk"></i>#}
+{#                                <span  class="m-r-sm text-muted welcome-message">{{ pro.name }}({{ pro.mini_name }})</span>#}
+{#                            </a>#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#        </li>#}
 
         <li>
             <span class="m-r-sm text-muted welcome-message">

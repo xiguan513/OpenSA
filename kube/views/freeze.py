@@ -28,19 +28,22 @@ def freezRun(request):
         gitTag = request.POST.get("gitTag")
         print(checkoutBranch,codeFreeze,projectName,gitTag)
         projects = models.GitInfo.objects.filter(git_env__name=projectName)
+
         for project in projects:
             try:
+                print("%s 开发封板操作" % project)
                 repo = GitApi.GitOpt(project.git_ssh,checkoutBranch,project.git_name)
                 repo.checkout(checkoutBranch) #切换到需要封板的分支
                 repo.remotepull(checkoutBranch) #更新最新代码
-                print("项目名: %s 当前分支: %s" (project.git_name,repo.activebranch()))  #查看当前分支
+                print("项目名: %s 当前分支: %s"  % (project.git_name,repo.activebranch()))  #查看当前分支
                 repo.createhead(codeFreeze) #创建封板分支
                 repo.createtag(gitTag,gitTag)#创建封板tag
-                print("项目名: %s 封板以后分支: %s"(project.git_name, repo.activebranch()))  #查看当前分支
+                repo.checkout(checkoutBranch)
+                print("项目名: %s 封板以后分支: %s" % (project.git_name, repo.activebranch()))  #查看当前分支
                 repo.remotepush(codeFreeze)
                 repo.remotepush(gitTag)
             except Exception as err:
-                print(err)
+                print("封板失败%s" % err)
                 return HttpResponse("fail")
             else:
                 models.Codefreeze.objects.create(project_name=project.git_name,checkout_branch=checkoutBranch,code_freeze=codeFreeze,

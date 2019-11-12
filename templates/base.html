@@ -70,11 +70,11 @@
         };
     </script>
 
-    {% ifequal project None %}
-    <script>
-        toastr.warning("请先选择您要操作的项目！")
-    </script>
-    {% endifequal %}
+{#    {% ifequal project None %}#}
+{#    <script>#}
+{#        toastr.warning("请先选择您要操作的项目！")#}
+{#    </script>#}
+{#    {% endifequal %}#}
 
     {% include 'foot_script.html' %}
     {% block footer-js %}
