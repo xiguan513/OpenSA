@@ -22,43 +22,10 @@ import time
 import uuid
 import json
 import re
-
-class Git:
-    def __init__(self,proEnv,branchName):
-        """
-        :param proEnv: 环境信息(erp,lvyou,lvbb)
-        :param branchName: 分支信息
-        """
-        self.branchName = branchName
-        self.proEnv = proEnv
-        self.serverName = []
+from kube.tasks import deployCelery
+from celery.result import AsyncResult
 
 
-    def updateCheck(self):
-        """
-        :return: 需要更新的服务列表
-        """
-        gitInfoList = models.GitInfo.objects.filter(git_env__name=self.proEnv)
-        # print("查询git",gitInfoList)
-        for gitInfo in gitInfoList:
-            repo = GitApi.GitOpt(gitInfo.git_ssh,self.branchName, gitInfo.git_name)
-            repo.clone()
-            # print("克隆项目 %s " % gitInfo.git_name)
-            curBranch = repo.activebranch()#获取当前分支
-            # print("获取分支 %s" % curBranch)
-            if curBranch != self.branchName:
-                #检查远程分支是否有此分支，如果没有此分支，使用master分支
-                originBranch = repo.repo.git.branch('-r').split()
-                if 'origin/'+self.branchName not in originBranch:
-                    self.branchName = 'origin/master'
-                repo.checkout(self.branchName)
-                histCommit = repo.repo.head.reference.commit #获取当前commit
-                repo.remotepull(self.branchName)
-                nowCommit = repo.repo.head.reference.commit #获取更新以后的commit
-                print(histCommit,nowCommit,gitInfo.git_name,self.branchName)
-                if histCommit != nowCommit:
-                    self.serverName.append(gitInfo.git_name)
-        return self.serverName
 
 
 
@@ -79,6 +46,39 @@ class listPod(LoginPermissionRequired,View):
         return render(request,'kube/kube-list.html',context=context)
 
 
+class Git:
+    def __init__(self,proEnv,branchName):
+        """
+        :param proEnv: 环境信息(erp,lvyou,lvbb)
+        :param branchName: 分支信息
+        """
+        self.branchName = branchName
+        self.proEnv = proEnv
+        self.serverName = []
+
+
+    def updateCheck(self):
+        """
+        :return: 需要更新的服务列表
+        """
+        gitInfoList = models.GitInfo.objects.filter(git_env__name=self.proEnv)
+        for gitInfo in gitInfoList:
+            repo = GitApi.GitOpt(gitInfo.git_ssh,self.branchName, gitInfo.git_name)
+            repo.clone()
+            curBranch = repo.activebranch()#获取当前分支
+            if curBranch != self.branchName:
+                #检查远程分支是否有此分支，如果没有此分支，使用master分支
+                originBranch = repo.repo.git.branch('-r').split()
+                if 'origin/'+self.branchName not in originBranch:
+                    self.branchName = 'origin/master'
+                repo.checkout(self.branchName)
+                histCommit = repo.repo.head.reference.commit #获取当前commit
+                repo.remotepull(self.branchName)
+                nowCommit = repo.repo.head.reference.commit #获取更新以后的commit
+                print(histCommit,nowCommit,gitInfo.git_name,self.branchName)
+                if histCommit != nowCommit:
+                    self.serverName.append(gitInfo.git_name)
+        return self.serverName
 
 
 class deoloyMent(LoginPermissionRequired,View):
@@ -103,7 +103,6 @@ class deoloyMent(LoginPermissionRequired,View):
         proEnv = request.POST.get("proEnv")
         branchName = request.POST.get("branchName")
         checkAll = request.POST.get("checkAll")
-        buildPro = JenkinsApi.JenkinsOpt()
         statusName = envName+proEnv
         buildUuid = uuid.uuid4()
         status = models.DeployStatus.objects.filter(env_name=statusName).filter(~Q(renew_status='部署完成')).exists()
@@ -112,43 +111,35 @@ class deoloyMent(LoginPermissionRequired,View):
         else:
             if checkAll == "True":
                 gitInfoList = models.GitInfo.objects.filter(git_env__name=proEnv)
-                Git(proEnv,branchName).updateCheck()
+                Git(proEnv, branchName).updateCheck()
                 projectName = [project.git_name for project in gitInfoList]
                 for project in projectName:
-                    models.DeployStatus.objects.create(server_name=project,env_name=statusName, renew_status='开始Build',branch_env=branchName,build_uuid=buildUuid)
+                    models.DeployStatus.objects.create(server_name=project, env_name=statusName, renew_status='开始Build',
+                                                       branch_env=branchName, build_uuid=buildUuid)
             else:
                 projectName = [key for key in Git(proEnv, branchName).updateCheck()]
-                print(projectName,'部分更新')
                 proList = list(filter(
-                    lambda proName: models.GitInfo.objects.values('git_sort').filter(git_name=proName)[0]['git_sort'] == 1,
+                    lambda proName: models.GitInfo.objects.values('git_sort').filter(git_name=proName)[0][
+                                        'git_sort'] == 1,
                     projectName))
                 if proList:
-                    # print(proList, "检查到有common")
                     gitInfoList = models.GitInfo.objects.filter(git_env__name=proEnv)
                     projectName = [project.git_name for project in gitInfoList]
                 for project in projectName:
-                    models.DeployStatus.objects.create(server_name=project,env_name=statusName, renew_status='开始Build',branch_env=branchName,build_uuid=buildUuid)
-            print("判断是否执行到projectName:%s" % projectName)
+                    models.DeployStatus.objects.create(server_name=project, env_name=statusName, renew_status='开始Build',
+                                                       branch_env=branchName, build_uuid=buildUuid)
             if not projectName:
-                models.DeployStatus.objects.filter(build_uuid=buildUuid).update(renew_status="没有检查到更新项目",)
+                models.DeployStatus.objects.filter(build_uuid=buildUuid).update(renew_status="没有检查到更新项目", )
                 return HttpResponse("None")
             elif isinstance(projectName, list):
-                for project in projectName:
-                    tmpParam = models.GitInfo.objects.filter(git_name=project)
-                    # print("查询对象%s" % tmpParam)
-                    for parm in tmpParam:
-                        try:
-                            # print("实行build %s" % parm)
-                            buildPro.buildjob(project,branchName,envName,proEnv,buildUuid)
-                            time.sleep(10)
-                        except Exception as err:
-                            print(err)
+                taskId = deployCelery.delay(envName=envName,proEnv=proEnv,branchName=branchName,
+                                    buildUuid=buildUuid,projectName=projectName)
+                res = AsyncResult(taskId)
+                print(res)
+                if res.result == None:
+                    return HttpResponse("success")
                 else:
-                    models.DeployStatus.objects.filter(build_uuid=buildUuid).update(renew_status='Build')
-            else:
-                return HttpResponse("fail")
-            #此处有问题
-            return HttpResponse("success")
+                    return HttpResponse("%s" % res.result)
 
 @csrf_exempt
 def generateK8s(request):
@@ -168,7 +159,6 @@ def generateK8s(request):
             #记录release版本的镜像信息
             models.Release.objects.filter(server_name=gitName,branch_env=branch).update(status="")
             models.Release.objects.create(image_name=imageName,server_name=gitName,branch_env=branch)
-            # print(connection.queries)
         else:
             models.UpdateInfo.objects.create(build_uuid=buildUuid,server_name=gitName,
                                              image_name=imageName, pro_env=nameSpace,
@@ -225,14 +215,12 @@ def generateK8s(request):
             body = SerTemPod.deployment()
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         with open(os.path.join(BASE_DIR, 'configfile/%s.yaml' % deployName), "w", encoding="utf-8") as f:
-            #生产pod.yaml文件
+            #生成pod.yaml文件
             yaml.dump(body, f, Dumper=yaml.RoundTripDumper)
         k8s = K8sApi.K8sOpt(namespace=nameSpace)
         if k8s.read_deployment(deployName+'-deployment'):
-            print("%s pod已经存在，更新pod" % deployName)
             status = k8s.update_deployment(MetadataName=deployName+'-deployment',deployment=body,imageName=imageName)
         else:
-            print("没有此 %s pod创建新pod" % deployName)
             status = k8s.create_deployment(body)
         models.DeployStatus.objects.filter(build_uuid=buildUuid).update(renew_status='部署完成')
         return HttpResponse("ok")

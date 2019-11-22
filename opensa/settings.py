@@ -159,8 +159,8 @@ LANGUAGE_CODE = 'zh-Hans'
 
 USE_I18N = True
 USE_L10N = True
-# USE_TZ = True
-USE_TZ = False
+USE_TZ = True
+# USE_TZ = False
 USE_THOUSAND_SEPARATOR = True
 LANGUAGES = (
     ('en', ugettext('Simple Chinese')),
@@ -257,6 +257,7 @@ def mail(request):
     return HttpResponse('mail')
 """
 
+#打印所有sql到控制台
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
@@ -274,5 +275,6 @@ def mail(request):
 #         },
 #     }
 # }
+
 
 
