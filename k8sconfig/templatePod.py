@@ -152,9 +152,7 @@ class TemplatePod:
                             "command": [
                                 self.kwargs["common"]
                             ],
-                            "args": [
-                                self.kwargs["args"]
-                            ],
+                            "args": self.kwargs["args"],
                             "volumeMounts": [
                                 {
                                     "name": self.kwargs['storName'],

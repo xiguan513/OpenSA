@@ -169,8 +169,10 @@ def generateK8s(request):
         if ',' in args:
             args = args.split(",")
         else:
-            args = updateTem.args
+            args = args.split()
+        print("args 参数 %s " % args)
         if updateTem.storage: #判断是否有添加存储
+            print("添加存储")
             data = {"gitName": deployName,
                     "configmap": updateTem.configmap,
                     "harbor": updateTem.harbor,
